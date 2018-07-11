@@ -1,0 +1,92 @@
+const webpack = require('webpack');
+const path = require('path');
+
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin'); //  -> ADDED IN THIS STEP
+//const ExtractCSS = new ExtractTextPlugin("css/[name].[chunkhash].css");
+//const CopyWebpackPlugin = require("copy-webpack-plugin");
+
+
+// Constant with our paths
+const paths = {
+    DIST: path.resolve(__dirname, 'dist'),
+    SRC: path.resolve(__dirname, 'src'), // source folder path -> ADDED IN THIS STEP
+    JS: path.resolve(__dirname, 'src/app'),
+    CSS: path.resolve(__dirname, 'src/resource/styles')
+};
+
+
+var config = {
+    entry: [
+        path.join(paths.JS, 'index.js')
+    ],
+    output: {
+        path: paths.DIST,
+        filename: 'bundle.js'
+    },
+
+    devServer: {
+        inline: true,
+        port: 8080,
+        contentBase: paths.SRC
+    },
+    // We are telling webpack to use "babel-loader" for .js and .jsx files
+    module: {
+        rules: [
+            {
+                test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
+                loaders: ['react-hot-loader/webpack', 'babel-loader']
+            },
+            //style-loader is a Webpack loader that can load some CSS and inject it into the document via a <link> tag.
+            {
+                test: /\.css$/,
+                loader: 'style-loader',
+            },
+            // Ccss-loader is the loader that can parse a CSS file and apply various transforms to it.
+            // Crucially it has a CSS Modules mode that can take our CSS and hash the classes as mentioned above.
+            {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract("css")
+                // loader: "css-loader",
+                // include: paths.CSS,
+                //loader: "css-loader!autoprefixer-loader"
+            },
+            // {
+            //     test: /\.scss/,
+            //     loader: ExtractTextPlugin.extract({
+            //         fallbackLoader: 'style-loader',
+            //         loader: "css-loader!sass-loader",
+            //     }),
+            // },
+            {
+                test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000
+                }
+            }
+        ],
+    },
+    // Enable importing JS files without specifying their's extenstion -> ADDED IN THIS STEP
+    //
+    // So we can write:
+    // import MyComponent from './my-component';
+    //
+    // Instead of:
+    // import MyComponent from './my-component.jsx';
+    resolve: {
+        extensions: ['.js', '.jsx'],
+    },
+    plugins: [
+
+
+        new HtmlWebpackPlugin({
+            template: path.join(paths.JS, 'index.html')
+
+        }),
+        new ExtractTextPlugin('style.bundle.css'), // CSS will be extracted to this bundle file -> ADDED IN THIS STEP
+    ]
+}
+
+module.exports = config;
