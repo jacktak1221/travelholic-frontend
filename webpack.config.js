@@ -1,12 +1,19 @@
 const path = require('path');
 
+const HtmlWebPackPlugin = require("html-webpack-plugin");
+
 // Constant with our paths
-const paths = {
-    DIST: path.resolve(__dirname, 'dist'),
-    SRC: path.resolve(__dirname, 'src')
-};
+const htmlPlugin = new HtmlWebPackPlugin({
+    template: "./src/index.html",
+    filename: "./index.html"
+});
+
 module.exports = {
-    entry: "./src/app.js",
+    //entry: "./src/index.js",
+    output: {
+        path: path.resolve('dist'),
+        filename: 'bundled.js'
+        },
     module: {
         rules: [
             {
@@ -37,10 +44,10 @@ module.exports = {
         ]
     },
     plugins: [
-        htmlWebpackPlugin
+        htmlPlugin
     ],
     devServer: {
-        port: 7070,
-        contentBase: paths.SRC
+        port: 7070
+        //contentBase: path
     }
 };
